@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado de Matemática - PA, PG e Função Afim</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #646464;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .quiz-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      width: 100%;
+      padding: 30px;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-align: center;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .question-count {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .question-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background-color: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 16px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #2d3748;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      background-color: #e8f4fd;
+      border-color: #3498db;
+      color: #2980b9;
+    }
+
+    .option-btn.correct {
+      background-color: #d4edda !important;
+      border-color: #28a745 !important;
+      color: #155724 !important;
+      font-weight: bold;
+    }
+
+    .option-btn.incorrect {
+      background-color: #f8d7da !important;
+      border-color: #dc3545 !important;
+      color: #721c24 !important;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+
+    .next-btn {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    .next-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .next-btn:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+    }
+
+    .result-container {
+      text-align: center;
+    }
+
+    .result-title {
+      font-size: 26px;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    .score-text {
+      font-size: 20px;
+      margin-bottom: 25px;
+      color: #555;
+    }
+
+    .restart-btn {
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .restart-btn:hover {
+      background-color: #27ae60;
+    }
+
+    .feedback {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 15px;
+      display: none;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.correct-bg {
+      background-color: #e2f0d9;
+      color: #385723;
+    }
+
+    .feedback.incorrect-bg {
+      background-color: #fce4d6;
+      color: #c65911;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container">
+    <h1>Simulado de Matemática</h1>
+    
+    <div id="quiz-box">
+      <div class="question-count" id="question-count">Questão 1 de 20</div>
+      <div class="question-text" id="question-text">Texto da questão...</div>
+      <div class="options-container" id="options-container">
+        <!-- Opções injetadas via JS -->
+      </div>
+      <div class="feedback" id="feedback-box"></div>
+      <div class="controls">
+        <button class="next-btn" id="next-btn" disabled>Próxima Questão</button>
+      </div>
+    </div>
+
+    <div id="result-box" class="result-container" style="display: none;">
+      <div class="result-title">Simulado Concluído!</div>
+      <div class="score-text" id="score-text">Você acertou 0 de 20 questões.</div>
+      <button class="restart-btn" id="restart-btn">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "1. Considere todos os números naturais múltiplos de 7, maiores que 50 e menores que 300. Esses números formam uma PA. Qual é a quantidade de termos dessa PA?",
+        options: ["35 termos", "36 termos", "42 termos", "43 termos"],
+        answer: 0,
+        explanation: "Múltiplos de 7 no intervalo: o primeiro é 56 e o último é 294. Pela fórmula do termo geral: 294 = 56 + (n - 1) * 7 => 238 = (n - 1) * 7 => n - 1 = 34 => n = 35."
+      },
+      {
+        question: "2. Em uma progressão aritmética, o 5º termo é 23 e o 12º termo é 51. Qual é a razão dessa PA?",
+        options: ["3,5", "4", "4,6", "7"],
+        answer: 1,
+        explanation: "Fórmula: a12 = a5 + 7 * r. Substituindo: 51 = 23 + 7r => 28 = 7r => r = 4."
+      },
+      {
+        question: "3. Uma progressão aritmética é dada por (7, 12, 17, 22, ...). Sabe-se que 232 é um dos termos. Qual é a posição ocupada pelo número 232?",
+        options: ["44ª posição", "45ª posição", "46ª posição", "47ª posição"],
+        answer: 2,
+        explanation: "Primeiro termo a1 = 7, razão r = 5. Fórmula: an = a1 + (n - 1) * r => 232 = 7 + (n - 1) * 5 => 225 = 5(n - 1) => n - 1 = 45 => n = 46."
+      },
+      {
+        question: "4. Uma empresa no 1º mês produz 120 unidades. A cada mês a produção aumenta em 15 unidades. Qual será a produção do 12º mês?",
+        options: ["285 unidades", "300 unidades", "270 unidades", "280 unidades"],
+        answer: 0,
+        explanation: "Trata-se de uma PA com a1 = 120 e r = 15. Queremos a12 = a1 + 11 * r => a12 = 120 + 11 * 15 = 120 + 165 = 285 unidades."
+      },
+      {
+        question: "5. Uma sequência de números positivos forma uma PG. Sabe-se que o 3º termo é 18 e o 6º termo é 486. A razão dessa PG é:",
+        options: ["q = 2", "q = 3", "q = 9", "q = 27"],
+        answer: 1,
+        explanation: "Em uma PG, a6 = a3 * q³. Substituindo: 486 = 18 * q³ => q³ = 486 / 18 => q³ = 27 => q = 3."
+      },
+      {
+        question: "6. Uma cultura de bactérias começa com 200 bactérias no 1º período. A cada período, a quantidade é multiplicada por 3. Qual a quantidade no 6º período?",
+        options: ["1.200 bactérias", "14.580 bactérias", "48.600 bactérias", "145.800 bactérias"],
+        answer: 2,
+        explanation: "PG com a1 = 200 e q = 3. Fórmula: a6 = a1 * q⁵ => a6 = 200 * 3⁵ = 200 * 243 = 48.600 bactérias."
+      },
+      {
+        question: "7. Os números (x - 1, x + 2, 2x + 8) formam, nessa ordem, uma PG de termos positivos. Qual é o valor de x?",
+        options: ["x = 2", "x = 4", "x = 5", "x = 6"],
+        answer: 0,
+        explanation: "Propriedade da PG: (x + 2)² = (x - 1)(2x + 8). Expandindo: x² + 4x + 4 = 2x² + 6x - 8 => x² + 2x - 12 = 0. Testando x = 2 para termos positivos na lista."
+      },
+      {
+        question: "8. Uma PG possui a1 = 5 e razão q = 2. Sabe-se que o último termo é 640. O número de termos dessa PG é:",
+        options: ["7", "8", "9", "10"],
+        answer: 1,
+        explanation: "Fórmula: an = a1 * q^(n-1) => 640 = 5 * 2^(n-1) => 128 = 2^(n-1). Como 128 = 2⁷, temos: n - 1 = 7 => n = 8."
+      },
+      {
+        question: "9. Uma empresa de artesanato cobra uma taxa fixa de R$ 25,00 mais R$ 4,00 por quilômetro. Qual a lei da função que representa essa cobrança?",
+        options: ["V(x) = 25x + 4", "V(x) = 4x + 25", "V(x) = 29x", "V(x) = 4x - 25"],
+        answer: 1,
+        explanation: "O valor fixo é o termo independente (b = 25) e o valor variável depende dos quilômetros x (a = 4). Logo, V(x) = 4x + 25."
+      },
+      {
+        question: "10. Uma cooperativa cobra taxa fixa de R$ 20,00 mais R$ 5,00 por km. Se uma pessoa pagou R$ 70,00 pela entrega, quantos quilômetros foram percorridos?",
+        options: ["8 km", "10 km", "12 km", "18 km"],
+        answer: 1,
+        explanation: "Função: V(x) = 5x + 20. Igualando a R$ 70,00: 70 = 5x + 20 => 50 = 5x => x = 10 km."
+      },
+      {
+        question: "11. Qual é o 20º termo da PA cujo primeiro termo é 3 e a razão é 5?",
+        options: ["98", "103", "95", "100"],
+        answer: 0,
+        explanation: "Fórmula da PA: a20 = a1 + 19 * r = 3 + 19 * 5 = 3 + 95 = 98."
+      },
+      {
+        question: "12. Qual é a soma dos 10 primeiros termos da PA (2, 6, 10, 14, ...)?",
+        options: ["180", "200", "220", "240"],
+        answer: 1,
+        explanation: "a1 = 2, r = 4. O 10º termo a10 = 2 + 9 * 4 = 38. Soma: S10 = (a1 + a10) * 10 / 2 = (2 + 38) * 5 = 200."
+      },
+      {
+        question: "13. Dada a PG (3, 6, 12, 24, ...), qual é o 7º termo dessa sequência?",
+        options: ["96", "192", "384", "153"],
+        answer: 1,
+        explanation: "a1 = 3, q = 2. Fórmula: a7 = a1 * q⁶ = 3 * 2⁶ = 3 * 64 = 192."
+      },
+      {
+        question: "14. A soma dos 5 primeiros termos de uma PG com primeiro termo 2 e razão 3 é:",
+        options: ["242", "243", "121", "484"],
+        answer: 0,
+        explanation: "Fórmula da soma da PG: Sn = a1 * (qⁿ - 1) / (q - 1) = 2 * (3⁵ - 1) / (3 - 1) = 2 * (243 - 1) / 2 = 242."
+      },
+      {
+        question: "15. Uma função afim é dada por f(x) = -3x + 12. Onde o gráfico dessa função corta o eixo x (raiz da função)?",
+        options: ["x = 4", "x = -4", "x = 12", "x = 3"],
+        answer: 0,
+        explanation: "Para achar a raiz, igualamos f(x) a zero: -3x + 12 = 0 => 3x = 12 => x = 4."
+      },
+      {
+        question: "16. Uma corrida de táxi tem uma tarifa inicial (bandeirada) de R$ 6,00 e custa R$ 2,50 por km rodado. Quanto custará uma corrida de 14 km?",
+        options: ["R$ 35,00", "R$ 41,00", "R$ 38,00", "R$ 45,00"],
+        answer: 1,
+        explanation: "f(x) = 2,50 * x + 6. Para x = 14: f(14) = 2,50 * 14 + 6 = 35 + 6 = R$ 41,00."
+      },
+      {
+        question: "17. Uma PA possui a1 = -10 e razão r = 4. Quantos termos são necessários para que o termo seja igual a 30?",
+        options: ["10 termos", "11 termos", "12 termos", "9 termos"],
+        answer: 1,
+        explanation: "30 = -10 + (n - 1) * 4 => 40 = 4(n - 1) => n - 1 = 10 => n = 11."
+      },
+      {
+        question: "18. Qual o valor do coeficiente angular (a) da função afim cujo gráfico passa pelos pontos (1, 5) e (3, 11)?",
+        options: ["a = 2", "a = 3", "a = 4", "a = 6"],
+        answer: 1,
+        explanation: "O coeficiente angular é dado por a = (y2 - y1) / (x2 - x1) = (11 - 5) / (3 - 1) = 6 / 2 = 3."
+      },
+      {
+        question: "19. Em uma PG estritamente decrescente de termos positivos, a razão q satisfaz qual condição?",
+        options: ["q > 1", "0 < q < 1", "q < 0", "q = 1"],
+        answer: 1,
+        explanation: "Para uma PG com termos positivos ser decrescente, sua razão deve estar estritamente entre 0 e 1 (0 < q < 1)."
+      },
+      {
+        question: "20. O gráfico da função f(x) = 2x + 4 corta o eixo das ordenadas (eixo y) no ponto:",
+        options: ["(0, 2)", "(0, 4)", "(4, 0)", "(-2, 0)"],
+        answer: 1,
+        explanation: "O eixo y é cortado quando x = 0. Calculando: f(0) = 2(0) + 4 = 4. Portanto, no ponto (0, 4)."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionCountEl = document.getElementById('question-count');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsContainerEl = document.getElementById('options-container');
+    const nextBtn = document.getElementById('next-btn');
+    const feedbackBox = document.getElementById('feedback-box');
+    const quizBox = document.getElementById('quiz-box');
+    const resultBox = document.getElementById('result-box');
+    const scoreTextEl = document.getElementById('score-text');
+    const restartBtn = document.getElementById('restart-btn');
+
+    function loadQuestion() {
+      resetState();
+      const currentQ = questions[currentQuestionIndex];
+      questionCountEl.textContent = `Questão ${currentQuestionIndex + 1} de ${questions.length}`;
+      questionTextEl.textContent = currentQ.question;
+
+      currentQ.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.classList.add('option-btn');
+        button.addEventListener('click', () => selectOption(index));
+        optionsContainerEl.appendChild(button);
+      });
+    }
+
+    function resetState() {
+      nextBtn.disabled = true;
+      feedbackBox.className = 'feedback';
+      feedbackBox.textContent = '';
+      optionsContainerEl.innerHTML = '';
+    }
+
+    function selectOption(selectedIndex) {
+      const currentQ = questions[currentQuestionIndex];
+      const buttons = optionsContainerEl.querySelectorAll('.option-btn');
+
+      buttons.forEach((button, index) => {
+        button.disabled = true;
+        if (index === currentQ.answer) {
+          button.classList.add('correct');
+        }
+        if (index === selectedIndex && selectedIndex !== currentQ.answer) {
+          button.classList.add('incorrect');
+        }
+      });
+
+      if (selectedIndex === currentQ.answer) {
+        score++;
+        feedbackBox.textContent = "Resposta Correta! " + currentQ.explanation;
+        feedbackBox.classList.add('show', 'correct-bg');
+      } else {
+        feedbackBox.textContent = "Resposta Incorreta. " + currentQ.explanation;
+        feedbackBox.classList.add('show', 'incorrect-bg');
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    });
+
+    function showResults() {
+      quizBox.style.display = 'none';
+      resultBox.style.display = 'block';
+      scoreTextEl.textContent = `Você acertou ${score} de ${questions.length} questões (${(score / questions.length) * 100}%).`;
+    }
+
+    restartBtn.addEventListener('click', () => {
+      score = 0;
+      currentQuestionIndex = 0;
+      resultBox.style.display = 'none';
+      quizBox.style.display = 'block';
+      loadQuestion();
+    });
+
+    // Iniciar o questionário
+    loadQuestion();
+  </script>
+</body>
+</html>
